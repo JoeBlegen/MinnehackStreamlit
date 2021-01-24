@@ -160,7 +160,7 @@ class main_streamlit(object):
             self.house.total_water_consumption()
             self.house.total_energy_consumption()
             st.write(f'You are using {self.house.total_water_use} Gallons of water a year')
-            st.write(f'You are using {self.house.total_electricity_use} kWh a year, for a cost of {self.house.electricity_total_cost}')
+            st.write(f'You are using {self.house.total_electricity_use} kWh a year, for a cost of ${self.house.electricity_total_cost}')
             if st.button("Generate Recommendations"):
                 self.house.generate_recommendations(show_length,therm)
 
