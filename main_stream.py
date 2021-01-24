@@ -3,6 +3,19 @@ from PIL import Image
 import requests
 import random
 
+def _max_width_():
+    max_width_str = f"max-width: 2000px;"
+    st.markdown(
+        f"""
+    <style>
+    .reportview-container .main .block-container{{
+        {max_width_str}
+    }}
+    </style>    
+    """,
+        unsafe_allow_html=True,
+    )
+
 class appliance(object):
     def __init__(self, time_used, water_usage=None, electricity_usage=None, natural_gas_usage=None):
         self.water_usage = water_usage
@@ -47,17 +60,11 @@ class home(object):
             for app in self.appliance_list:
                 if app.water_usage is not None:
                     self.total_water_use += app.water_usage * app.time_used * 365
+        self.total_water_use = round(self.total_water_use,2)
 
     @st.cache()
     def calculate_solar_generation(self):
-        try:
-            if self.zip_code > 4000:
-                self.add_appliances(5, electricity_usage= -random.randint(250,300))
-            else:
-                self.add_appliances(5, electricity_usage= -random.randint(350,400))
-        except:
-            pass
-
+        self.add_appliances(5, electricity_usage= -random.randint(250,300))
         #Use zipcode somehow
 
     def furnace_load_calculation(self):
@@ -66,18 +73,14 @@ class home(object):
     def ac_load_calculation(self):
         self.add_appliances(3, electricity_usage=3500)
 
-def _max_width_():
-    max_width_str = f"max-width: 2000px;"
-    st.markdown(
-        f"""
-    <style>
-    .reportview-container .main .block-container{{
-        {max_width_str}
-    }}
-    </style>    
-    """,
-        unsafe_allow_html=True,
-    )
+    def generate_recommendations(self, show_length, therm):
+        if show_length > .15:
+            st.write("Take shorter showers, or install a low flow showerhead")
+            st.write("Amazon [link](https://www.amazon.com/High-Sierras-Efficiency-Showerhead-Available/dp/B001W2CEYA/ref=sr_1_7?dchild=1&keywords=low+flow+shower+head&qid=1611505674&sr=8-7)")
+        elif therm == 'No':
+            st.write("Purchase a smart thermostat, you could decrease your cooling/heating costs by 10-15%")
+            st.write("Amazon [link](https://www.amazon.com/Google-Nest-Thermostat-Smart-Programmable/dp/B08HRPDYTP/ref=sr_1_5?)")
+
 #https://www.energy.gov/eere/why-energy-efficiency-upgrades
 class main_streamlit(object):
     def __init__(self):
@@ -127,8 +130,16 @@ class main_streamlit(object):
             insul_effic = st.radio("Home recently inspected", ['-','Yes','No'])
             if insul_effic == 'No':
                 self.house.add_appliances(1, electricity_usage=3000)
-
-        # with col3:
+            lights = st.radio("Energy Efficient Lighting",['-','Yes','No'])
+            if lights == 'Yes':
+                self.house.add_appliances(4, electricity_usage=25*12)
+            else:
+                self.house.add_appliances(4, electricity_usage=100*12)
+            show_length = st.number_input("Length of Showers (min)",0) / 60
+            self.house.add_appliances(show_length,water_usage=2.5)
+            sprinkler_usage = st.radio("Sprinklers",['-','Yes','No'])
+            if sprinkler_usage == 'Yes':
+                self.house.add_appliances(.2,water_usage=1020)
 
         with col3:
             if clothes_dryer == "Electric Dryer":
@@ -150,6 +161,8 @@ class main_streamlit(object):
             self.house.total_energy_consumption()
             st.write(f'You are using {self.house.total_water_use} Gallons of water a year')
             st.write(f'You are using {self.house.total_electricity_use} kWh a year, for a cost of {self.house.electricity_total_cost}')
+            if st.button("Generate Recommendations"):
+                self.house.generate_recommendations(show_length,therm)
 
 
 if __name__ == '__main__':
