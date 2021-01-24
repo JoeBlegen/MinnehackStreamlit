@@ -15,7 +15,7 @@ class appliance(object):
             self.energy_consumption = water_usage * time_used
 
 class home(object):
-    def __init__(self, electricity_cost=None, zip_code=None, total_electricity_use=0,
+    def __init__(self, electricity_cost=.1, zip_code=None, total_electricity_use=0,
                  total_water_use=0, electricity_total_cost=0):
         self.electricity_cost = electricity_cost
         self.zip_code = zip_code
@@ -39,21 +39,23 @@ class home(object):
         self.appliance_list.append(appliance(time_used, water_usage, electricity_usage, natural_gas_usage))
 
     def total_energy_consumption(self):
-        for app in self.appliance_list:
-            if app.electricity_usage is not None:
-                self.total_electricity_use += app.electricity_usage * app.time_used * 365
-        self.total_electricity_use = self.total_electricity_use / 1000
-        self.electricity_total_cost = round((self.total_electricity_use) * self.electricity_cost,2)
+        if len(self.appliance_list) != 0:
+            for app in self.appliance_list:
+                if app.electricity_usage is not None:
+                    self.total_electricity_use += app.electricity_usage * app.time_used * 365
+            self.total_electricity_use = self.total_electricity_use / 1000
+            self.electricity_total_cost = round((self.total_electricity_use) * self.electricity_cost,2)
 
     def total_water_consumption(self):
-        for app in self.appliance_list:
-            if app.water_usage is not None:
-                self.total_water_use += app.water_usage * app.time_used * 365
+        if len(self.appliance_list) != 0:
+            for app in self.appliance_list:
+                if app.water_usage is not None:
+                    self.total_water_use += app.water_usage * app.time_used * 365
 
     @st.cache()
     def calculate_solar_generation(self):
         try:
-            if self.zip_code > 4000
+            if self.zip_code > 4000:
                 self.add_appliances(5, electricity_usage= -random.randint(250,300))
             else:
                 self.add_appliances(5, electricity_usage= -random.randint(350,400))
@@ -104,11 +106,15 @@ class main_streamlit(object):
             fur = st.radio('Furnace Type', ['-','electric','gas','heatpump'])
             if fur == 'gas':
                 st.radio('Furnace Efficiency', ['-','90% Efficiency','92% Efficiency'])
+                self.house.ac_load_calculation()
             elif fur == 'electric':
                 self.house.furnace_load_calculation()
+                self.house.ac_load_calculation()
+            elif fur =='heatpump':
+                self.house.add_appliances(4,electricity_usage=350)
             therm = st.radio("Smart Thermostat",['-',"Yes", "No"])
             if therm == "Yes":
-                self.house.add_appliances(2,-180)
+                self.house.add_appliances(2,electricity_usage=-180)
             panels = st.radio("Add Solar Panels", ('-',"Yes","No"))
             if panels == "Yes":
                 self.house.calculate_solar_generation()
