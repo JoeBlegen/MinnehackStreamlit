@@ -124,7 +124,9 @@ class main_streamlit(object):
             clothes_dryer = st.radio("Dryer Type",['-',"Electric Dryer", "Clothesline"])
             if clothes_dryer == "Electric Dryer":
                 self.house.add_appliances(.25,electricity_usage=3000)
-            insul_effic = st.radio("In")
+            insul_effic = st.radio("Home recently inspected", ['-','Yes','No'])
+            if insul_effic == 'No':
+                self.house.add_appliances(1, electricity_usage=3000)
 
         # with col3:
 
