@@ -78,7 +78,7 @@ class home(object):
             st.write("Take shorter showers, or install a low flow showerhead")
             st.write("Amazon [link](https://www.amazon.com/High-Sierras-Efficiency-Showerhead-Available/dp/B001W2CEYA/ref=sr_1_7?dchild=1&keywords=low+flow+shower+head&qid=1611505674&sr=8-7)")
         elif therm == 'No':
-            st.write("Purchase a smart thermostat, you could decrease your cooling/heating costs by 10-15%")
+            st.write("Purchase a smart thermostat, you could decrease your coolsing/heating costs by 10-15%")
             st.write("Amazon [link](https://www.amazon.com/Google-Nest-Thermostat-Smart-Programmable/dp/B08HRPDYTP/ref=sr_1_5?)")
 
 #https://www.energy.gov/eere/why-energy-efficiency-upgrades
