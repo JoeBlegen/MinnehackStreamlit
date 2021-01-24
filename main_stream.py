@@ -1,22 +1,7 @@
 import streamlit as st
 from PIL import Image
 import requests
-import random
-
-# I. Following the steps above, find the annual cost to operate an electric kettle.
-
-# 1. Estimate of time used: The kettle is used several times per day, for about 1 total hour.
-
-# 2. electricity_usage: The electricity_usage is on the label and is listed at 1500 W.
-
-# 3. Daily energy consumption:
-# (1,500 W × 1) ÷ 1,000 = 1.5 kWh
-
-# 4. Annual energy consumption: The kettle is used almost every day of the year.
-# 1.5 kWh × 365 = 547.5 kWh
-
-# 5. Annual cost: The utility rate is 11 cents per kWh.
-# 547.5 kWh × $0.11/kWh = $60.23/year
+import math
 
 class appliance(object):
     def __init__(self, time_used, water_usage=None, electricity_usage=None, natural_gas_usage=None):
@@ -39,11 +24,11 @@ class home(object):
         self.electricity_total_cost = electricity_total_cost
         self.appliance_list = []
 
-    #@st.cache
+    @st.cache
     def update_electric_prices(self):
-        self.electricity_cost = random.uniform(0.11, 0.3)
+        self.electricity_cost = random.uniform(0.11, 0.13)
 
-    #@st.cache
+    @st.cache
     def region_characteristics(self):
         #Use zip code
         if None:
@@ -57,7 +42,8 @@ class home(object):
         for app in self.appliance_list:
             if app.electricity_usage is not None:
                 self.total_electricity_use += app.electricity_usage * app.time_used * 365
-        self.electricity_total_cost = self.total_electricity_use * self.electricity_cost
+        self.total_electricity_use = self.total_electricity_use / 1000
+        self.electricity_total_cost = round((self.total_electricity_use) * self.electricity_cost,2)
 
     def total_water_consumption(self):
         for app in self.appliance_list:
@@ -66,21 +52,41 @@ class home(object):
 
     @st.cache()
     def calculate_solar_generation(self):
-        self.add_appliances(5, electricity_usage= -random.randint(1,50))
+        try:
+            if self.zip_code > 4000
+                self.add_appliances(5, electricity_usage= -random.randint(250,300))
+            else:
+                self.add_appliances(5, electricity_usage= -random.randint(350,400))
+        except:
+            pass
+
         #Use zipcode somehow
 
     def furnace_load_calculation(self):
-        self.add_appliances(2, electricity_usage=18000)
+        self.add_appliances(2, electricity_usage=1800)
 
     def ac_load_calculation(self):
         self.add_appliances(3, electricity_usage=3500)
 
+def _max_width_():
+    max_width_str = f"max-width: 2000px;"
+    st.markdown(
+        f"""
+    <style>
+    .reportview-container .main .block-container{{
+        {max_width_str}
+    }}
+    </style>    
+    """,
+        unsafe_allow_html=True,
+    )
 #https://www.energy.gov/eere/why-energy-efficiency-upgrades
 class main_streamlit(object):
     def __init__(self):
         self.house = home()
 
     def create_main_page(self):
+        _max_width_()
         st.markdown(
             """ <style>
                     div[role="radiogroup"] >  :first-child{
@@ -100,21 +106,22 @@ class main_streamlit(object):
                 st.radio('Furnace Efficiency', ['-','90% Efficiency','92% Efficiency'])
             elif fur == 'electric':
                 self.house.furnace_load_calculation()
-            air_con = st.number_input("Air Conditioner SEER",8,20)
             therm = st.radio("Smart Thermostat",['-',"Yes", "No"])
+            if therm == "Yes":
+                self.house.add_appliances(2,-180)
             panels = st.radio("Add Solar Panels", ('-',"Yes","No"))
             if panels == "Yes":
                 self.house.calculate_solar_generation()
             wa_heat = st.radio("Water Heater Type",['-',"Tank Water Heater", "Tankless Water Heater"])
             if wa_heat == "Tankless Water Heater":
-                self.house.add_appliances(1.5,electricity_usage=4000)
+                self.house.add_appliances(1.5,electricity_usage=3000)
             elif wa_heat == "Tank Water Heater":
                 self.house.add_appliances(3,electricity_usage=4000)
+            
+        with col2:
             clothes_dryer = st.radio("Dryer Type",['-',"Electric Dryer", "Clothesline"])
             if clothes_dryer == "Electric Dryer":
                 self.house.add_appliances(.25,electricity_usage=3000)
-
-        # with col2:
 
         # with col3:
 
