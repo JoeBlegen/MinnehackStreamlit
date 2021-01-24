@@ -1,7 +1,7 @@
 import streamlit as st
 from PIL import Image
 import requests
-import math
+import random
 
 class appliance(object):
     def __init__(self, time_used, water_usage=None, electricity_usage=None, natural_gas_usage=None):
@@ -9,10 +9,6 @@ class appliance(object):
         self.electricity_usage = electricity_usage
         self.natural_gas_usage = natural_gas_usage
         self.time_used = time_used
-        if electricity_usage is not None:
-            self.energy_consumption = electricity_usage * time_used
-        if water_usage is not None:
-            self.energy_consumption = water_usage * time_used
 
 class home(object):
     def __init__(self, electricity_cost=.1, zip_code=None, total_electricity_use=0,
@@ -128,11 +124,21 @@ class main_streamlit(object):
             clothes_dryer = st.radio("Dryer Type",['-',"Electric Dryer", "Clothesline"])
             if clothes_dryer == "Electric Dryer":
                 self.house.add_appliances(.25,electricity_usage=3000)
+            insul_effic = st.radio("In")
 
         # with col3:
 
         with col3:
-            img = Image.open("house.jpg")
+            if clothes_dryer == "Electric Dryer":
+                img = Image.open("dryer.jpg")
+            elif clothes_dryer == "Clothesline":
+                img = Image.open("clothesline.jpg")
+            elif panels == "Yes":
+                img = Image.open("image2.jpg")
+            elif therm == 'Yes':
+                img = Image.open("image3.jpg")
+            else:
+                img = Image.open("house.jpg")
             basewidth = 500
             wpercent = (basewidth/float(img.size[0]))
             hsize = int((float(img.size[1])*float(wpercent)))
